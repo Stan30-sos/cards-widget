@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="cards-game" x-data="{
+        deckId:'',
+        cardsRemaining: 0,
+        cardsList:[],
+        loadDeck(){
+            const createDeckURL = 'https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1'
+
+            axios
+                .get(createDeckURL)
+                .then((result) => {
+                    this.deckId = result.data.deck_id;
+                    this.cardsRemaining= result.data.remaining;
+                });
+        },
+        drawFiveCards(){
+           const drawCardURL = 'https://deckofcardsapi.com/api/deck/'+ this.deckId +'/draw/?count=5'
+
+           axios
+                .get(drawCardURL)
+                .then((result) => {
+                    this.cardsList = result.data.cards;
+                    this.cardsRemaining = result.data.remaining;
+                });
+        
+        },
+        shuffleDeck(){
+            const shuffleCardsURL ='https://deckofcardsapi.com/api/deck/'+ this.deckId +'/shuffle/'
+
+            axios
+                .get(shuffleCardsURL)
+                .then((result)=>{
+                    this.cardsList = result.data.shuffled;
+                    this.cardsRemaining = result.data.remaining;
+            
+                })
+        },
+    }">
+    <label for="">Deck Id:</label>
+    <span x-text="deckId"></span>
+<div>
+
+    <button @click="loadDeck">Load deck</button>
+    <button @click="drawFiveCards">Draw 5 cards</button>
+    <button @click="shuffleDeck">Shuffle deck</button>
+</div>
+<div>
+    <h2>Cards Drawn</h2>
+
+    <div>
+        Cards Renaining:<span x-text="cardsRemaining"></span> 
+    </div> 
+
+    <template x-for="card in cardsList">
+        <img x-bind:src="card.image" alt="" height="150">
+    </template>
+
+
+</div>
+    </div>
+</body>
+</html>
